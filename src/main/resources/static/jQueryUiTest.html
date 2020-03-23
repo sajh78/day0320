@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Insert title here</title>
+<link rel="stylesheet" href="jquery-ui-1.12.1/jquery-ui.min.css">
+<style type="text/css">
+	body{
+		font-size: 62.5%;
+	}
+	
+	h1{
+		text-align: center;
+	}
+	
+	input[type=text],label{
+		margin-bottom: 12px;
+		padding: .4em;
+		width: 95%;
+	}
+</style>
+
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	
+	function listScheduel(){
+		$("#output").empty();
+		
+		$.getJSON("listSchedule", function(data){
+			$.each(data, function(idx, s){
+				$("#output").append($("<h1></h1>").html( s.event_name + ":" + s.event_date ));
+			});
+		});
+	}
+	
+	
+	$("#open_button").click(function(){
+		$("#dialog").dialog('open');
+	});
+	
+	$("#dialog").dialog({	
+		autoOpen:false, 
+		//=> 이걸 지우면 정상작동 됨.. 왜 안되는지 모르겠움 ㅜㅜ 선생님 코드 복사해서 붙여도 이게 있음 작동 안됨..
+		// 지우고 다시 쓰니깐 작동 됨...뭐죠? 
+		//ㅇ_ㅇ 잘되다 안되다 막 오락가락함..ㅠㅠ
+		
+		modal:true, 
+		buttons:{
+			sumbit:function(){
+				
+				var schedule = $("#dialog").serialize();
+				$.ajax("insertSchedule", {data:schedule, success:function(){
+					listScheduel();
+					$("#event_name").val("");
+					$("#event_date").val("");
+					$("#dialog").dialog('close');
+				}});
+				
+				/* var event_name= $("#event_name").val();
+				var event_date= $("#event_date").val();
+				$("#output").append( $("<h1></h1").html(event_name + ":" +event_date )   );
+				$("#event_name").val("");
+				$("#event_date").val("");
+				$("#dialog").dialog('close'); */
+			},
+			reset:function(){
+				$("#event_name").val("");
+				$("#event_date").val("");
+			},
+			cancel:function(){
+				$("#event_name").val("");
+				$("#event_date").val("");
+				$("#dialog").dialog('close');
+			}
+		}
+	});
+	$("#event_date").datepicker({
+		numberOfMonths:3,
+		dateFormat:"yy년 mm월 dd일"
+	});
+	
+})
+</script>
+</head>
+<body>
+	<h1 id="open_button">일정 생성</h1>
+	<hr>
+	<div id="output"></div>
+	<from id="dialog" title="일정등록">
+		<h1>일정 등록</h1>
+		<label for="event_name">일정이름</label>
+		<input type="text" id="event_name" name="event_name">
+		<label for="event_date">날짜</label>
+		<input type="text" id="event_date" name="event_date">
+	</form>
+</body>
+</html>

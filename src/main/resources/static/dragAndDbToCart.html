@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link rel="stylesheet" href="jquery-ui-1.12.1/jquery-ui.min.css">
+<style type="text/css">
+	*{
+		margin: 0px;
+		padding: 0px;
+	}
+	
+	body {
+		font: 62.5%;
+	}
+	
+	.item{
+		margin: 3px;
+		padding: 5px;
+	}
+	
+	.item > img{
+		width: 50px;
+		height: 50px;
+	}
+	
+	#wrap{
+		overflow: hidden;
+	}
+	
+	#wrap > div{
+		float: left;
+	}
+	
+	#dock{
+		position: fixed;
+		min-height: 120px;
+		width: 100%;
+		bottom: 0px;
+		z-index: 1;
+	}
+	
+	#dock > div{
+		float: right;
+	}
+	input{
+		visibility: visible;
+	}
+</style>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		
+		// 담기 버튼을 누루면 장바구니에 상품 담기도록 설정하기
+		$("#addCart").click(function(){
+			
+			// id가  dock의 후손인 item을 찾는다
+			var cartList = $("#dock > .item");
+			$.each(cartList, function(idx, item){
+				var gno = $(item).attr("gno");
+				var qty = $(item).find(".qty").val();
+				
+				//  gno를 전달한다 (추후 새로운 속성을 추가할 수 있으므로 객체로 만들어 놓는다.)
+				var g = {gno:gno, qty:qty};
+				$.ajax("insertCart", {data:g, success:function(){
+					
+				}});
+				
+				//alert(gno);
+			});
+			
+			//alert(cartList.length);
+		});
+		
+		//db에 있는 상품을 불러와서 드래그하여 하단에 놓기
+		$.getJSON("/goodsList", function(arr){
+
+			$.each(arr, function(idx, g){
+				
+				
+				// 상품번호는 눈에 보이지 않아도 되므로  div의 속성으로 추가한다.
+				var item = $("<div class='ui-widget-content ui-corner-all item'></div>").attr("gno", g.no);
+				
+				var img = $("<img/>").attr("src", "img/"+ g.fname);
+				var name = $("<p></p>").html(g.item);
+				var price = $("<p></p>").html(g.price);
+				var qty = $("<input type='number' class='qty'/>").val(1);
+				
+				$(qty).css("visibility", "hidden");
+				$(item).append(img, name, price, qty, id);
+				$("#wrap").append(item);
+			});
+			
+			$("#wrap > div").draggable({
+				helper:"clone",
+				zIndex:100,
+				scroll:false
+			});
+			
+			$("#dock").droppable({
+				accept:"#wrap > div",
+				drop:function(event, ui){
+					$(ui.draggable).fadeOut(function(){
+						$(this).appendTo("#dock").fadeIn();
+						// 담기 버튼 누를때만 수량 보이도록
+						$(this).find(".qty").css("visibility", "visible");
+
+					});
+				}
+			});
+			$("#body").droppable({
+				accept:"#dock > div",
+				drop:function(event, ui){
+					$(ui.draggable).fadeOut(function(){
+						$(this).appendTo("#wrap").fadeIn();
+					});
+				}
+			});
+		});	
+	});	
+	
+</script>
+</head>
+<body>
+	<div id="wrap"></div>
+	<button id="addCart">담기</button><br>
+	<div id="dock" class="ui-state-error"></div>
+
+</body>
+</html>

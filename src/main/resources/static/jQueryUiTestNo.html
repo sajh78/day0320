@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style type="text/css">
+	body{
+		font-size: 62.5%;
+	}
+	
+	h1{
+		text-align: center;
+	}
+	
+	input[type=text], label {
+		margin-bottom: 12px;
+		padding: 0.4em;
+		width: 95%;
+	}
+</style>
+<link rel="stylesheet" href="jquery-ui-1.12.1/jquery-ui.min.css">
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="jquery-ui-1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		
+		$("#open_button").click(function(){
+			$("#dialog").dialog("open");
+		});
+		
+		$("#dialog").dialog({
+			autoOpen: false,
+			
+			//=> 이걸 지우면 정상작동 됨.. 왜 안되는지 모르겠움 ㅜㅜ 선생님 코드 복사해서 붙여도 이게 있음 작동 안됨..
+			// 지우고 다시 쓰니깐 작동 됨...뭐죠? 
+			//ㅇ_ㅇ 잘되다 안되다 막 오락가락함..ㅠㅠ
+			
+			modal:true,
+			buttons:{
+				submit:function(){
+					var eventName = $("#event_name").val();
+					var eventDate = $("#event_date").val();
+					$("#output").append($("<h1></h1>").html(event_name + ":" + event_date))
+					$("#event_name").val("");
+					$("#event_date").val("");
+					$("#dialog").dialog("close");
+				},
+				reset:function(){
+					$("#event_name").val("");
+					$("#event_date").val("");
+				},
+				cancel:function(){
+					$("#event_name").val("");
+					$("#event_date").val("");
+					$("#dialog").dialog("close");
+				}
+			}
+		});
+		
+		$("#event_date").datepicker({
+			
+			// 달력이 3개 나오도록 설정
+			numberOfMonths:3,
+			
+			// 날짜 출력 모양 정하기
+			dateFormat:"yy년 mm월 dd일"
+		});
+		
+	});
+</script>
+</head>
+<body>
+	<h1 id="open_button">일정 생성</h1>
+	<hr>
+	<div id="output"></div>
+	<div id="dialog" title="일정등록">
+		<h1>일정 등록</h1>
+		<label for="event_name">일정이름</label>
+		<input type="text" id="event_name"><br>
+		<label for="event_date">날짜</label>
+		<input type="text" id="event_date"><br>
+	</div>
+</body>
+</html>

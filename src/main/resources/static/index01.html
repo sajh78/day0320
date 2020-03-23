@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script type="text/javascript">
+	$(function(){
+		var person = {
+				name:"tiger",
+				age : 20,
+				addr : "seoul"
+		};
+		
+		//쿼리스트링으로 만들기 → param() 이용
+		var str = $.param(person);
+		alert(str); 
+		// ▶  name=tiger&age=20&addr=seoul (객체내용이 한글이면 깨져서 유니코드로 나옴)
+	});
+
+</script>
+</head>
+<body>
+	<h1>Hello</h1>
+</body>
+</html>
